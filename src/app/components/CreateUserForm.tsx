@@ -1,7 +1,9 @@
 'use client';
 
 import { handleCreateUser, handleClearUsers } from '@/app/users/create-action';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+import type { UserFormState } from '@/types'; // همان نوع
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -17,7 +19,10 @@ function SubmitButton() {
 }
 
 export default function CreateUserForm() {
-  const [state, formAction] = useFormState(handleCreateUser, null);
+  // ✅ initialState باید با نوع تابع سازگار باشد
+  const initialState: UserFormState = { message: undefined };
+
+  const [state, formAction] = useActionState(handleCreateUser, initialState);
 
   return (
     <div className="mb-8 p-4 border rounded-lg bg-gray-50">
@@ -25,7 +30,9 @@ export default function CreateUserForm() {
 
       <form action={formAction} className="space-y-3">
         {state?.message && (
-          <p className="text-red-600">{state.message}</p>
+          <p className={`text-sm ${state.message.includes('موفقیت') ? 'text-green-600' : 'text-red-600'}`}>
+            {state.message}
+          </p>
         )}
 
         <div>
